@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Jeu de la Recherche - RAG Explorer</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="game-header">
+            <a href="../index.html" class="back-button">← Retour</a>
+            <div class="header-content">
+                <h1>🔍 Le Jeu de la Recherche</h1>
+                <p class="header-description">Découvrez comment le RAG recherche les informations pertinentes</p>
+            </div>
+        </header>
+
+        <main class="game-content">
+            <div class="game-scenario">
+                <div class="scenario-card">
+                    <h2>🎮 Mission : Assistant IA</h2>
+                    <p>Vous êtes un assistant IA qui doit aider des utilisateurs. Pour gagner des points, trouvez les documents les plus pertinents pour répondre à leurs questions !</p>
+                    <div class="score-display">
+                        <span>Score : </span>
+                        <span id="scoreValue">0</span>
+                        <span> points</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-container">
+                <div class="current-question" id="currentQuestion">
+                    <h3>Question actuelle :</h3>
+                    <p id="questionText">Chargement de la question...</p>
+                </div>
+                <div class="search-box">
+                    <div class="search-input-container">
+                        <input type="text" 
+                               id="searchQuery" 
+                               placeholder="Entrez des mots-clés pour trouver les documents pertinents" 
+                               class="search-input">
+                        <button onclick="performSearch()" class="search-button">
+                            <span class="button-icon">🔍</span>
+                            <span class="button-text">Rechercher</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-container" id="searchResults">
+                <div class="document-grid" id="documentGrid"></div>
+                <div class="game-feedback" id="gameFeedback"></div>
+            </div>
+
+            <div class="game-controls">
+                <button onclick="submitAnswer()" class="submit-button" id="submitButton" disabled>
+                    Valider la sélection
+                </button>
+                <button onclick="nextQuestion()" class="next-button" id="nextButton" disabled>
+                    Question suivante →
+                </button>
+            </div>
+
+            <div id="gameComplete" class="next-step-card hidden">
+                <h3>🎯 Prochaine étape : L'Augmentation</h3>
+                <p>Maintenant que vous maîtrisez la recherche de documents pertinents, découvrez comment enrichir la question avec le contexte trouvé !</p>
+                <a href="augmentation.html" class="next-level-button">
+                    Passer à l'augmentation →
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <style>
+        .game-header {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            text-align: center;
+        }
+
+        .header-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            transition: transform 0.2s ease;
+        }
+
+        .back-button:hover {
+            transform: translateX(-5px);
+        }
+
+        .game-scenario {
+            margin-bottom: 2rem;
+        }
+
+        .scenario-card {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .score-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .current-question {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .current-question h3 {
+            margin: 0 0 0.5rem 0;
+            color: #4a90e2;
+        }
+
+        .current-question p {
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .document-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .document-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .document-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .document-card.selected {
+            border-color: #4CAF50;
+            background: #f1f8e9;
+        }
+
+        .document-card.correct {
+            border-color: #4CAF50;
+            background: #e8f5e9;
+        }
+
+        .document-card.incorrect {
+            border-color: #f44336;
+            background: #ffebee;
+        }
+
+        .game-feedback {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .game-feedback.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .game-feedback.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        .submit-button, .next-button {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-button {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .submit-button:hover:not(:disabled) {
+            background: #43A047;
+        }
+
+        .next-button {
+            background: #2196F3;
+            color: white;
+        }
+
+        .next-button:hover:not(:disabled) {
+            background: #1E88E5;
+        }
+
+        .submit-button:disabled, .next-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .next-step-card {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-top: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .next-step-card.hidden {
+            display: none;
+        }
+
+        .next-step-card h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.5rem;
+        }
+
+        .next-step-card p {
+            margin: 0 0 1.5rem 0;
+            opacity: 0.9;
+        }
+
+        .next-level-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: white;
+            color: #4CAF50;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .next-level-button:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+
+    <script>
+        // Questions du jeu
+        const gameQuestions = [
+            {
+                question: "Comment fonctionne une voiture électrique ?",
+                correctDocs: ["doc1", "doc4"],
+                points: 100
+            },
+            {
+                question: "Quels sont les impacts du changement climatique ?",
+                correctDocs: ["doc2", "doc5"],
+                points: 100
+            },
+            {
+                question: "Expliquez le fonctionnement de l'intelligence artificielle",
+                correctDocs: ["doc3", "doc6"],
+                points: 100
+            }
+        ];
+
+        // Documents disponibles
+        const documents = [
+            {
+                id: "doc1",
+                title: "Les bases de la voiture électrique",
+                content: "Une voiture électrique fonctionne grâce à un moteur électrique alimenté par des batteries. L'énergie électrique est convertie en énergie mécanique pour faire avancer le véhicule.",
+                keywords: ["voiture", "électrique", "batterie", "moteur"]
+            },
+            {
+                id: "doc2",
+                title: "Impact environnemental",
+                content: "Le changement climatique provoque la montée des eaux, des événements météorologiques extrêmes et la perte de biodiversité. Les activités humaines en sont la principale cause.",
+                keywords: ["climat", "environnement", "réchauffement"]
+            },
+            {
+                id: "doc3",
+                title: "Introduction à l'IA",
+                content: "L'intelligence artificielle utilise des algorithmes et des données pour simuler l'intelligence humaine. Elle peut apprendre, s'adapter et prendre des décisions.",
+                keywords: ["ia", "intelligence", "artificielle", "algorithme"]
+            },
+            {
+                id: "doc4",
+                title: "Avantages des véhicules électriques",
+                content: "Les voitures électriques sont plus écologiques, nécessitent moins d'entretien et sont plus silencieuses que les véhicules traditionnels.",
+                keywords: ["voiture", "électrique", "avantage", "écologie"]
+            },
+            {
+                id: "doc5",
+                title: "Solutions climatiques",
+                content: "Pour lutter contre le changement climatique, nous devons réduire les émissions de CO2, développer les énergies renouvelables et protéger les écosystèmes.",
+                keywords: ["climat", "solution", "CO2", "énergie"]
+            },
+            {
+                id: "doc6",
+                title: "Applications de l'IA",
+                content: "L'IA est utilisée dans de nombreux domaines : reconnaissance vocale, conduite autonome, diagnostic médical et recommandations personnalisées.",
+                keywords: ["ia", "application", "technologie"]
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedDocuments = [];
+        let canSubmit = true;
+
+        // Initialisation du jeu
+        function initGame() {
+            document.getElementById('gameComplete').classList.add('hidden');
+            updateQuestion();
+            updateScore();
+            document.getElementById('submitButton').disabled = true;
+            document.getElementById('nextButton').disabled = true;
+        }
+
+        // Mise à jour de la question
+        function updateQuestion() {
+            const question = gameQuestions[currentQuestionIndex];
+            document.getElementById('questionText').textContent = question.question;
+            document.getElementById('searchQuery').value = '';
+            document.getElementById('documentGrid').innerHTML = '';
+            document.getElementById('gameFeedback').innerHTML = '';
+            selectedDocuments = [];
+            canSubmit = true;
+        }
+
+        // Mise à jour du score
+        function updateScore() {
+            document.getElementById('scoreValue').textContent = score;
+        }
+
+        // Recherche de documents
+        function performSearch() {
+            const query = document.getElementById('searchQuery').value.toLowerCase();
+            if (!query) return;
+
+            const documentGrid = document.getElementById('documentGrid');
+            documentGrid.innerHTML = '';
+
+            // Simuler une recherche avec un délai pour l'effet
+            documents.forEach((doc, index) => {
+                const relevance = calculateRelevance(query, doc);
+                if (relevance > 0) {
+                    setTimeout(() => {
+                        const docElement = document.createElement('div');
+                        docElement.className = 'document-card';
+                        docElement.dataset.docId = doc.id;
+                        docElement.innerHTML = `
+                            <h3>${doc.title}</h3>
+                            <p>${doc.content}</p>
+                        `;
+                        docElement.onclick = () => toggleDocumentSelection(doc.id, docElement);
+                        documentGrid.appendChild(docElement);
+                        docElement.style.opacity = '0';
+                        setTimeout(() => {
+                            docElement.style.opacity = '1';
+                        }, 50);
+                    }, index * 200);
+                }
+            });
+        }
+
+        // Calcul simple de pertinence
+        function calculateRelevance(query, doc) {
+            const queryTerms = query.toLowerCase().split(' ');
+            const docTerms = [...doc.keywords, ...doc.title.toLowerCase().split(' ')];
+            return queryTerms.filter(term => docTerms.some(docTerm => docTerm.includes(term))).length;
+        }
+
+        // Sélection/Désélection d'un document
+        function toggleDocumentSelection(docId, element) {
+            if (!canSubmit) return;
+
+            const index = selectedDocuments.indexOf(docId);
+            if (index === -1) {
+                selectedDocuments.push(docId);
+                element.classList.add('selected');
+            } else {
+                selectedDocuments.splice(index, 1);
+                element.classList.remove('selected');
+            }
+
+            document.getElementById('submitButton').disabled = selectedDocuments.length === 0;
+        }
+
+        // Validation de la réponse
+        function submitAnswer() {
+            if (!canSubmit) return;
+
+            const question = gameQuestions[currentQuestionIndex];
+            const correctDocs = question.correctDocs;
+            const feedback = document.getElementById('gameFeedback');
+            
+            // Vérifier les documents sélectionnés
+            const correctSelections = selectedDocuments.filter(doc => correctDocs.includes(doc));
+            const incorrectSelections = selectedDocuments.filter(doc => !correctDocs.includes(doc));
+            
+            // Calculer le score
+            const pointsEarned = Math.floor(
+                (correctSelections.length / correctDocs.length) * question.points -
+                (incorrectSelections.length * 20)
+            );
+
+            // Mettre à jour le visuel
+            selectedDocuments.forEach(docId => {
+                const element = document.querySelector(`[data-doc-id="${docId}"]`);
+                if (correctDocs.includes(docId)) {
+                    element.classList.add('correct');
+                } else {
+                    element.classList.add('incorrect');
+                }
+            });
+
+            // Afficher le feedback
+            if (pointsEarned > 0) {
+                feedback.className = 'game-feedback success';
+                feedback.innerHTML = `
+                    <h3>🎉 Bien joué !</h3>
+                    <p>Vous avez gagné ${pointsEarned} points</p>
+                `;
+                score += pointsEarned;
+                updateScore();
+            } else {
+                feedback.className = 'game-feedback error';
+                feedback.innerHTML = `
+                    <h3>😕 Essayez encore !</h3>
+                    <p>Ces documents ne sont pas les plus pertinents</p>
+                `;
+            }
+
+            // Activer le bouton suivant
+            document.getElementById('nextButton').disabled = false;
+            document.getElementById('submitButton').disabled = true;
+            canSubmit = false;
+
+            // Vérifier si c'est la dernière question
+            if (currentQuestionIndex === gameQuestions.length - 1) {
+                showGameComplete();
+            }
+        }
+
+        // Afficher l'écran de fin de jeu
+        function showGameComplete() {
+            const feedback = document.getElementById('gameFeedback');
+            feedback.className = 'game-feedback success';
+            feedback.innerHTML = `
+                <h3>🏆 Félicitations !</h3>
+                <p>Vous avez terminé le jeu avec ${score} points</p>
+            `;
+            document.getElementById('nextButton').disabled = true;
+            document.getElementById('gameComplete').classList.remove('hidden');
+        }
+
+        // Passer à la question suivante
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex >= gameQuestions.length) {
+                showGameComplete();
+                return;
+            }
+            updateQuestion();
+            document.getElementById('nextButton').disabled = true;
+        }
+
+        // Redémarrer le jeu
+        function restartGame() {
+            currentQuestionIndex = 0;
+            score = 0;
+            selectedDocuments = [];
+            document.getElementById('gameComplete').classList.add('hidden');
+            initGame();
+        }
+
+        // Initialiser le jeu au chargement
+        document.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>

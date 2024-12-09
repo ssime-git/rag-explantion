@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Augmentation - RAG Explorer</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="game-header">
+            <a href="../index.html" class="back-button">← Retour</a>
+            <div class="header-content">
+                <h1>📚 L'Augmentation</h1>
+                <p class="header-description">Enrichissez votre question avec du contexte pertinent</p>
+            </div>
+        </header>
+
+        <main class="game-content">
+            <div class="explanation-card">
+                <h2>Comment fonctionne l'augmentation ?</h2>
+                <p>L'augmentation est une étape cruciale du RAG qui consiste à enrichir la question originale avec des informations pertinentes extraites des documents. Cette étape permet au modèle de langage de générer une réponse plus précise et mieux documentée.</p>
+                <div class="key-points">
+                    <div class="point">
+                        <h3>🎯 Objectif</h3>
+                        <p>Fournir au modèle le contexte nécessaire pour répondre précisément à la question.</p>
+                    </div>
+                    <div class="point">
+                        <h3>📝 Méthode</h3>
+                        <p>Sélectionner et organiser les passages pertinents des documents trouvés.</p>
+                    </div>
+                    <div class="point">
+                        <h3>✨ Résultat</h3>
+                        <p>Un prompt enrichi qui combine la question et le contexte sélectionné.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="augmentation-playground">
+                <div class="flow-container">
+                    <div class="flow-step" id="questionBox">
+                        <h3>Question</h3>
+                        <div class="content-box">
+                            <p>Comment fonctionne une voiture électrique ?</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-arrow">→</div>
+                    
+                    <div class="flow-step" id="contextBox">
+                        <h3>Contexte</h3>
+                        <div class="content-box droppable" id="contextDropZone">
+                            <p class="placeholder">Glissez les passages pertinents ici</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-arrow">→</div>
+                    
+                    <div class="flow-step" id="promptBox">
+                        <h3>Prompt Final</h3>
+                        <div class="content-box">
+                            <div id="finalPrompt"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="documents-container">
+                    <h3>Passages Disponibles</h3>
+                    <div class="documents-grid">
+                        <div class="document draggable" draggable="true">
+                            Une voiture électrique fonctionne grâce à un moteur électrique alimenté par des batteries. L'énergie électrique est convertie en énergie mécanique pour faire avancer le véhicule.
+                        </div>
+                        <div class="document draggable" draggable="true">
+                            Les voitures électriques sont plus écologiques, nécessitent moins d'entretien et sont plus silencieuses que les véhicules traditionnels.
+                        </div>
+                        <div class="document draggable" draggable="true">
+                            La batterie d'une voiture électrique peut être rechargée à domicile ou dans des stations de recharge publiques.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="next-step-card">
+                <h3>🤖 Prochaine étape : La Génération</h3>
+                <p>Maintenant que vous avez enrichi votre question avec du contexte, découvrez comment le modèle génère une réponse précise !</p>
+                <a href="generation.html" class="next-level-button">
+                    Passer à la génération →
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <style>
+        .explanation-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .key-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .point {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .point h3 {
+            margin: 0 0 0.5rem 0;
+            color: #4a90e2;
+        }
+
+        .augmentation-playground {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .flow-container {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .flow-step {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .flow-arrow {
+            font-size: 2rem;
+            color: #4a90e2;
+        }
+
+        .content-box {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            min-height: 100px;
+            border: 2px dashed #ddd;
+        }
+
+        .content-box.droppable.active {
+            border-color: #4CAF50;
+            background: #f1f8e9;
+        }
+
+        .documents-container {
+            margin-top: 2rem;
+        }
+
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .document {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            cursor: move;
+            transition: all 0.3s ease;
+        }
+
+        .document:hover {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .document.dragging {
+            opacity: 0.5;
+        }
+
+        .placeholder {
+            color: #666;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .next-step-card {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .next-step-card h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.5rem;
+        }
+
+        .next-step-card p {
+            margin: 0 0 1.5rem 0;
+            opacity: 0.9;
+        }
+
+        .next-level-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: white;
+            color: #4CAF50;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .next-level-button:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .flow-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const draggables = document.querySelectorAll('.draggable');
+            const dropZone = document.getElementById('contextDropZone');
+            const finalPrompt = document.getElementById('finalPrompt');
+
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', () => {
+                    draggable.classList.add('dragging');
+                });
+
+                draggable.addEventListener('dragend', () => {
+                    draggable.classList.remove('dragging');
+                });
+            });
+
+            dropZone.addEventListener('dragover', e => {
+                e.preventDefault();
+                dropZone.classList.add('active');
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('active');
+            });
+
+            dropZone.addEventListener('drop', e => {
+                e.preventDefault();
+                dropZone.classList.remove('active');
+                
+                const draggable = document.querySelector('.dragging');
+                if (draggable) {
+                    const clone = draggable.cloneNode(true);
+                    clone.classList.remove('dragging');
+                    
+                    // Supprimer le placeholder s'il existe
+                    const placeholder = dropZone.querySelector('.placeholder');
+                    if (placeholder) {
+                        placeholder.remove();
+                    }
+                    
+                    dropZone.appendChild(clone);
+                    updateFinalPrompt();
+                }
+            });
+
+            function updateFinalPrompt() {
+                const question = document.querySelector('#questionBox .content-box').textContent.trim();
+                const context = Array.from(dropZone.children)
+                    .map(child => child.textContent.trim())
+                    .filter(text => text !== 'Glissez les passages pertinents ici')
+                    .join('\n\n');
+
+                finalPrompt.innerHTML = `
+                    <strong>Contexte:</strong><br>
+                    ${context}<br><br>
+                    <strong>Question:</strong><br>
+                    ${question}
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

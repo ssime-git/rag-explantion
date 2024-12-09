@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Génération - RAG Explorer</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="game-header">
+            <a href="../index.html" class="back-button">← Retour</a>
+            <div class="header-content">
+                <h1>🤖 La Génération</h1>
+                <p class="header-description">Générez des réponses précises avec le contexte enrichi</p>
+            </div>
+        </header>
+
+        <main class="game-content">
+            <div class="explanation-card">
+                <h2>Comment fonctionne la génération ?</h2>
+                <p>La génération est l'étape finale du RAG où le modèle de langage utilise le contexte enrichi pour produire une réponse précise et pertinente. Cette étape combine la puissance du LLM avec les informations extraites des documents.</p>
+                <div class="key-points">
+                    <div class="point">
+                        <h3>🎯 Objectif</h3>
+                        <p>Produire une réponse qui utilise efficacement le contexte fourni tout en restant naturelle et cohérente.</p>
+                    </div>
+                    <div class="point">
+                        <h3>📝 Méthode</h3>
+                        <p>Le modèle analyse le contexte et la question pour générer une réponse qui s'appuie sur les informations disponibles.</p>
+                    </div>
+                    <div class="point">
+                        <h3>✨ Résultat</h3>
+                        <p>Une réponse précise, factuelle et bien structurée qui répond directement à la question posée.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="generation-playground">
+                <div class="flow-container">
+                    <div class="flow-step" id="promptBox">
+                        <h3>Prompt Enrichi</h3>
+                        <div class="content-box droppable" id="promptDropZone">
+                            <div class="placeholder">Glissez le prompt enrichi ici</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-arrow">→</div>
+                    
+                    <div class="flow-step" id="modelBox">
+                        <h3>Modèle de Langage</h3>
+                        <div class="content-box model-box">
+                            <div class="model-animation">
+                                <div class="model-icon">🤖</div>
+                                <div class="processing-dots">
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-arrow">→</div>
+                    
+                    <div class="flow-step" id="responseBox">
+                        <h3>Réponse Générée</h3>
+                        <div class="content-box">
+                            <div id="generatedResponse"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="prompts-container">
+                    <h3>Prompts Disponibles</h3>
+                    <div class="prompts-grid">
+                        <div class="prompt draggable" draggable="true">
+                            <div class="prompt-content">
+                                <strong>Contexte:</strong><br>
+                                Une voiture électrique fonctionne grâce à un moteur électrique alimenté par des batteries. L'énergie électrique est convertie en énergie mécanique pour faire avancer le véhicule.<br><br>
+                                Les voitures électriques sont plus écologiques, nécessitent moins d'entretien et sont plus silencieuses que les véhicules traditionnels.<br><br>
+                                <strong>Question:</strong><br>
+                                Comment fonctionne une voiture électrique ?
+                            </div>
+                        </div>
+                        <div class="prompt draggable" draggable="true">
+                            <div class="prompt-content">
+                                <strong>Contexte:</strong><br>
+                                L'intelligence artificielle utilise des algorithmes et des données pour simuler l'intelligence humaine. Elle peut apprendre, s'adapter et prendre des décisions.<br><br>
+                                L'IA est utilisée dans de nombreux domaines : reconnaissance vocale, conduite autonome, diagnostic médical et recommandations personnalisées.<br><br>
+                                <strong>Question:</strong><br>
+                                Expliquez le fonctionnement de l'intelligence artificielle
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="completion-card">
+                <h3>🎉 Félicitations !</h3>
+                <p>Vous avez terminé l'exploration du RAG ! Vous avez découvert comment :</p>
+                <ul>
+                    <li>Rechercher les documents pertinents</li>
+                    <li>Enrichir la question avec du contexte</li>
+                    <li>Générer des réponses précises</li>
+                </ul>
+                <a href="../index.html" class="home-button">
+                    Retour à l'accueil
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <style>
+        .explanation-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .key-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .point {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .point h3 {
+            margin: 0 0 0.5rem 0;
+            color: #4a90e2;
+        }
+
+        .generation-playground {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .flow-container {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .flow-step {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .flow-arrow {
+            font-size: 2rem;
+            color: #4a90e2;
+        }
+
+        .content-box {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            min-height: 100px;
+            border: 2px dashed #ddd;
+        }
+
+        .content-box.droppable.active {
+            border-color: #4CAF50;
+            background: #f1f8e9;
+        }
+
+        .model-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            border: none;
+        }
+
+        .model-animation {
+            text-align: center;
+        }
+
+        .model-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .processing-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.3rem;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: #4a90e2;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.8); opacity: 0.5; }
+        }
+
+        .prompts-container {
+            margin-top: 2rem;
+        }
+
+        .prompts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .prompt {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            cursor: move;
+            transition: all 0.3s ease;
+        }
+
+        .prompt:hover {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .prompt.dragging {
+            opacity: 0.5;
+        }
+
+        .prompt-content {
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .completion-card {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .completion-card h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.5rem;
+        }
+
+        .completion-card p {
+            margin: 0 0 1rem 0;
+            opacity: 0.9;
+        }
+
+        .completion-card ul {
+            text-align: left;
+            margin: 1rem auto;
+            max-width: 400px;
+            padding-left: 2rem;
+        }
+
+        .completion-card li {
+            margin: 0.5rem 0;
+            opacity: 0.9;
+        }
+
+        .home-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: white;
+            color: #4CAF50;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            margin-top: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .home-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .flow-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const draggables = document.querySelectorAll('.draggable');
+            const dropZone = document.getElementById('promptDropZone');
+            const generatedResponse = document.getElementById('generatedResponse');
+            let modelAnimation;
+
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', () => {
+                    draggable.classList.add('dragging');
+                });
+
+                draggable.addEventListener('dragend', () => {
+                    draggable.classList.remove('dragging');
+                });
+            });
+
+            dropZone.addEventListener('dragover', e => {
+                e.preventDefault();
+                dropZone.classList.add('active');
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('active');
+            });
+
+            dropZone.addEventListener('drop', e => {
+                e.preventDefault();
+                dropZone.classList.remove('active');
+                
+                const draggable = document.querySelector('.dragging');
+                if (draggable) {
+                    const clone = draggable.cloneNode(true);
+                    clone.classList.remove('dragging');
+                    
+                    // Supprimer le placeholder s'il existe
+                    const placeholder = dropZone.querySelector('.placeholder');
+                    if (placeholder) {
+                        placeholder.remove();
+                    }
+                    
+                    // Vider la zone de dépôt avant d'ajouter le nouveau prompt
+                    dropZone.innerHTML = '';
+                    dropZone.appendChild(clone);
+                    
+                    // Simuler la génération de réponse
+                    generateResponse(clone.textContent);
+                }
+            });
+
+            function generateResponse(promptText) {
+                // Réinitialiser la réponse
+                generatedResponse.innerHTML = '';
+                
+                // Simuler le traitement
+                setTimeout(() => {
+                    let response = '';
+                    if (promptText.includes('voiture électrique')) {
+                        response = `Une voiture électrique fonctionne grâce à un système de propulsion électrique composé de plusieurs éléments clés :
+
+1. Le moteur électrique convertit l'énergie électrique en énergie mécanique pour faire avancer le véhicule
+2. Les batteries stockent l'énergie électrique nécessaire au fonctionnement du moteur
+3. Le système est plus efficace et écologique que les moteurs traditionnels
+
+Ces véhicules présentent plusieurs avantages : ils sont plus silencieux, nécessitent moins d'entretien et ont un impact environnemental réduit.`;
+                    } else if (promptText.includes('intelligence artificielle')) {
+                        response = `L'intelligence artificielle (IA) est un système qui simule l'intelligence humaine à travers plusieurs composants :
+
+1. Des algorithmes qui permettent d'analyser et de traiter les données
+2. Des capacités d'apprentissage qui permettent au système de s'améliorer avec l'expérience
+3. Des applications concrètes dans de nombreux domaines
+
+L'IA est aujourd'hui utilisée dans la reconnaissance vocale, la conduite autonome, le diagnostic médical et bien d'autres domaines.`;
+                    }
+
+                    generatedResponse.innerHTML = response;
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>

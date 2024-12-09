@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Explorer - Découvrez le RAG de manière interactive</title>
+    <link rel="stylesheet" href="static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="animate-fade-in">
+            <h1>🎮 RAG Explorer</h1>
+            <p class="subtitle">Découvrez le Retrieval-Augmented Generation en jouant !</p>
+        </header>
+
+        <main>
+            <div class="level-cards">
+                <a href="levels/intro.html" class="level-card">
+                    <div class="level-icon">🎯</div>
+                    <div class="level-content">
+                        <h2>Introduction au RAG</h2>
+                        <p>Découvrez le fonctionnement du RAG étape par étape</p>
+                    </div>
+                </a>
+
+                <a href="levels/retrieval.html" class="level-card">
+                    <div class="level-icon">🔍</div>
+                    <div class="level-content">
+                        <h2>La Recherche</h2>
+                        <p>Apprenez à trouver les documents les plus pertinents</p>
+                    </div>
+                </a>
+
+                <a href="levels/augmentation.html" class="level-card">
+                    <div class="level-icon">📚</div>
+                    <div class="level-content">
+                        <h2>L'Augmentation</h2>
+                        <p>Découvrez comment extraire et combiner les informations clés</p>
+                    </div>
+                </a>
+
+                <a href="levels/generation.html" class="level-card">
+                    <div class="level-icon">🤖</div>
+                    <div class="level-content">
+                        <h2>La Génération</h2>
+                        <p>Générez des réponses précises basées sur le contexte</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="explanation-section">
+                <h2>Comment fonctionne le RAG ?</h2>
+                <div class="steps-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h3>Recherche</h3>
+                        <p>Le système recherche les documents les plus pertinents pour répondre à votre question.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h3>Sélection et Extraction</h3>
+                        <p>Les passages les plus importants sont identifiés et extraits des documents sélectionnés.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h3>Augmentation</h3>
+                        <p>Le contexte est enrichi avec les informations extraites pour guider la réponse.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <h3>Génération</h3>
+                        <p>Une réponse précise est générée en utilisant le contexte enrichi.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Un projet éducatif pour comprendre le RAG - Propulsé par Ollama</p>
+            <div class="github-link">
+                <a href="https://github.com/ssime-git/rag-explanation" target="_blank">
+                    Voir sur GitHub 
+                    <span class="github-icon">➚</span>
+                </a>
+            </div>
+        </footer>
+    </div>
+
+    <style>
+        .level-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            text-decoration: none;
+            color: black;
+        }
+
+        .level-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .level-icon {
+            font-size: 2.5rem;
+            background: var(--background-color);
+            padding: 1rem;
+            border-radius: 12px;
+            min-width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .level-content {
+            flex: 1;
+        }
+
+        .level-content h2 {
+            margin: 0 0 0.5rem 0;
+            color: var(--text-color);
+        }
+
+        .level-content p {
+            margin: 0 0 1rem 0;
+            color: #666;
+        }
+
+        .explanation-section {
+            margin-top: 4rem;
+        }
+
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .step {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .github-link {
+            margin-top: 1rem;
+        }
+
+        .github-link a {
+            color: var(--text-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .github-icon {
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .level-card {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</body>
+</html>

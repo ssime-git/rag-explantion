@@ -168,6 +168,14 @@
             if (currentStepIndex < ragSteps.length - 1) {
                 currentStepIndex++;
                 showStep(currentStepIndex);
+            } else {
+                // Mettre à jour la barre de progression
+                updateProgress(currentStepIndex);
+
+                // Si toutes les étapes sont complétées, rediriger vers la page suivante
+                setTimeout(() => {
+                    window.location.href = 'retrieval.html';
+                }, 2000); // Attendre 2 secondes avant la redirection
             }
         }
 

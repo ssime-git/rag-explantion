@@ -11,7 +11,7 @@
     <div class="container">
         <header>
             <a href="../index.html" class="back-button">← Retour</a>
-            <h1>🎯 Introduction au RAG</h1>
+            <h1 id="stepTitle">🎯 Introduction au RAG</h1>
         </header>
 
         <main class="game-content">
@@ -20,7 +20,7 @@
             </div>
 
             <div class="content-container">
-                <div class="step-view" id="stepView">
+                <div id="stepContent">
                     <!-- Le contenu dynamique sera injecté ici -->
                 </div>
 
@@ -35,133 +35,59 @@
     <script>
         const ragSteps = [
             {
-                id: 'welcome',
-                title: 'Bienvenue dans le RAG Explorer',
+                title: "🎯 Introduction au RAG",
                 content: `
-                    <div class="step-content">
-                        <h2>🎯 Découvrez le RAG</h2>
-                        <p>Le RAG (Retrieval-Augmented Generation) est une technique puissante qui permet d'améliorer les réponses des modèles de langage en leur fournissant du contexte pertinent.</p>
-                        <p>Nous allons explorer ensemble chaque étape du processus de manière interactive.</p>
-                    </div>
+                    <p>Le RAG (Retrieval-Augmented Generation) est une technique qui améliore les réponses des modèles de langage en leur fournissant des informations pertinentes.</p>
+                    <p>Découvrons ensemble les 3 étapes clés du RAG :</p>
                 `
             },
             {
-                id: 'question',
-                title: 'Étape 1: La Question',
+                title: "🔍 Retrieval (Recherche)",
                 content: `
-                    <div class="step-content">
-                        <h2>❓ Posez votre question</h2>
-                        <div class="demo-box">
-                            <input type="text" id="userQuestion" 
-                                   placeholder="Par exemple: Comment fonctionne l'intelligence artificielle ?" 
-                                   class="question-input">
-                        </div>
-                        <div class="explanation">
-                            <p>Votre question est le point de départ du processus RAG.</p>
-                            <p>Elle sera analysée pour identifier les éléments clés et transformée en une représentation que le système peut utiliser pour la recherche.</p>
-                        </div>
-                    </div>
+                    <p>Le système recherche les documents les plus pertinents pour répondre à la question.</p>
+                    <p>Cette étape utilise des techniques de recherche sémantique pour trouver les meilleures correspondances.</p>
                 `
             },
             {
-                id: 'retrieval',
-                title: 'Étape 2: La Recherche',
+                title: "📚 Augmentation",
                 content: `
-                    <div class="step-content">
-                        <h2>🔍 Recherche des documents pertinents</h2>
-                        <div class="visualization">
-                            <div class="search-animation">
-                                <div class="doc-grid">
-                                    <div class="doc"></div>
-                                    <div class="doc highlight"></div>
-                                    <div class="doc"></div>
-                                    <div class="doc highlight"></div>
-                                    <div class="doc"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="explanation">
-                            <p>Le système recherche les documents les plus pertinents dans sa base de connaissances.</p>
-                            <p>Cette recherche utilise des techniques avancées de similarité sémantique pour trouver le meilleur contenu.</p>
-                        </div>
-                    </div>
+                    <p>Les documents sélectionnés sont utilisés pour enrichir le contexte de la question.</p>
+                    <p>Cette étape permet d'ajouter des informations précises et pertinentes.</p>
                 `
             },
             {
-                id: 'augmentation',
-                title: 'Étape 3: L\'Augmentation',
+                title: "🤖 Génération de la réponse",
                 content: `
-                    <div class="step-content">
-                        <h2>📚 Enrichissement du contexte</h2>
-                        <div class="visualization">
-                            <div class="augmentation-animation">
-                                <div class="context-builder">
-                                    <div class="original-query">Question</div>
-                                    <div class="context-arrows">↓</div>
-                                    <div class="enriched-query">Question + Contexte</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="explanation">
-                            <p>Les documents trouvés sont utilisés pour enrichir la question originale.</p>
-                            <p>Cette étape crée un prompt enrichi qui guidera le modèle vers une réponse plus précise.</p>
-                        </div>
-                    </div>
-                `
-            },
-            {
-                id: 'generation',
-                title: 'Étape 4: La Génération',
-                content: `
-                    <div class="step-content">
-                        <h2>🤖 Génération de la réponse</h2>
-                        <div class="visualization">
-                            <div class="generation-animation">
-                                <div class="model-response">
-                                    <div class="typing-indicator">
-                                        <span></span>
-                                        <span></span>
-                                        <span></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="explanation">
-                            <p>Le modèle de langage génère une réponse en utilisant le contexte enrichi.</p>
-                            <p>La réponse est plus précise et factuelle grâce aux informations fournies.</p>
-                        </div>
-                    </div>
+                    <p>Le modèle de langage génère une réponse en utilisant le contexte enrichi.</p>
+                    <p>La réponse est plus précise et factuelle grâce aux informations fournies.</p>
                 `
             }
         ];
 
         let currentStepIndex = 0;
 
+        function updateButtons() {
+            const prevButton = document.getElementById('prevButton');
+            const nextButton = document.getElementById('nextButton');
+            
+            prevButton.disabled = currentStepIndex === 0;
+            
+            if (currentStepIndex === ragSteps.length - 1) {
+                nextButton.textContent = 'Terminer';
+                nextButton.classList.add('complete');
+            } else {
+                nextButton.textContent = 'Suivant →';
+                nextButton.classList.remove('complete');
+            }
+        }
+
         function showStep(index) {
-            const stepView = document.getElementById('stepView');
             const step = ragSteps[index];
+            document.getElementById('stepTitle').innerHTML = step.title;
+            document.getElementById('stepContent').innerHTML = step.content;
             
-            stepView.innerHTML = step.content;
+            updateButtons();
             updateProgress(index);
-            updateNavigationButtons(index);
-            
-            // Animation d'entrée
-            stepView.style.opacity = 0;
-            setTimeout(() => {
-                stepView.style.opacity = 1;
-            }, 50);
-        }
-
-        function updateProgress(index) {
-            const progress = ((index + 1) / ragSteps.length) * 100;
-            document.getElementById('progressBar').style.width = `${progress}%`;
-        }
-
-        function updateNavigationButtons(index) {
-            document.getElementById('prevButton').disabled = index === 0;
-            document.getElementById('nextButton').disabled = index === ragSteps.length - 1;
-            document.getElementById('nextButton').textContent = 
-                index === ragSteps.length - 1 ? 'Terminer' : 'Suivant →';
         }
 
         function nextStep() {
@@ -169,13 +95,8 @@
                 currentStepIndex++;
                 showStep(currentStepIndex);
             } else {
-                // Mettre à jour la barre de progression
-                updateProgress(currentStepIndex);
-
-                // Si toutes les étapes sont complétées, rediriger vers la page suivante
-                setTimeout(() => {
-                    window.location.href = 'retrieval.html';
-                }, 2000); // Attendre 2 secondes avant la redirection
+                // Redirection vers la page suivante
+                window.location.href = 'retrieval.html';
             }
         }
 
@@ -186,160 +107,20 @@
             }
         }
 
+        function updateProgress(index) {
+            const progress = ((index + 1) / ragSteps.length) * 100;
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = `${progress}%`;
+        }
+
         // Initialisation
-        document.addEventListener('DOMContentLoaded', () => {
-            showStep(0);
-        });
+        showStep(0);
     </script>
 
     <style>
-        .game-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-            padding: 2rem;
-            height: calc(100vh - 100px);
-            position: relative;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: #e0e0e0;
-            border-radius: 2px;
-            margin-bottom: 1rem;
-        }
-
-        .progress {
-            height: 100%;
-            background: linear-gradient(90deg, #4CAF50, #8BC34A);
-            border-radius: 2px;
-            transition: width 0.3s ease;
-        }
-
-        .content-container {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 800px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .step-view {
-            flex: 1;
-            transition: opacity 0.3s ease;
-        }
-
-        .step-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .navigation-controls {
-            display: flex;
-            gap: 1rem;
-            justify-content: space-between;
-            margin-top: 2rem;
-            padding-top: 1rem;
-            border-top: 1px solid #eee;
-        }
-
-        .nav-button {
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            background: #4CAF50;
+        .nav-button.complete {
+            background-color: #4CAF50;
             color: white;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background 0.3s ease;
-        }
-
-        .nav-button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .nav-button:hover:not(:disabled) {
-            background: #45a049;
-        }
-
-        .visualization {
-            margin: 2rem 0;
-            min-height: 200px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .search-animation .doc-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 1rem;
-        }
-
-        .doc {
-            width: 60px;
-            height: 80px;
-            background: #f5f5f5;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .doc.highlight {
-            background: #e8f5e9;
-            transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
-        }
-
-        .context-builder {
-            text-align: center;
-        }
-
-        .original-query, .enriched-query {
-            padding: 1rem;
-            background: #f5f5f5;
-            border-radius: 8px;
-            margin: 1rem 0;
-        }
-
-        .context-arrows {
-            font-size: 2rem;
-            color: #4CAF50;
-        }
-
-        .typing-indicator {
-            display: flex;
-            gap: 0.5rem;
-            justify-content: center;
-        }
-
-        .typing-indicator span {
-            width: 8px;
-            height: 8px;
-            background: #4CAF50;
-            border-radius: 50%;
-            animation: bounce 1s infinite;
-        }
-
-        .typing-indicator span:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .typing-indicator span:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
         }
     </style>
 </body>
